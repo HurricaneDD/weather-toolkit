@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC 850hPa温度与风 500hPa位势高度</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background-color: #f6f8fa;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #0366d6;
+            font-weight: normal;
+        }
+        .subtitle {
+            color: #586069;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #0366d6;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+            font-weight: normal;
+        }
+        .nav-btn:hover {
+            text-decoration: underline;
+        }
+        .control-panel {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .time-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 1.5rem;
+        }
+        .current-time {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        .current-time-title {
+            color: #24292e;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+        #date-line, #time-line {
+            font-size: 2rem;
+            color: #24292e;
+            margin: 5px 0;
+            font-weight: normal;
+        }
+        .timestamp-selector {
+            flex: 1;
+            min-width: 300px;
+        }
+        .selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .selector-title {
+            color: #24292e;
+            font-size: 1.1rem;
+            font-weight: normal;
+        }
+        .timestamp-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .timestamp-btn {
+            padding: 10px 20px;
+            background: #f6f8fa;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #24292e;
+            font-weight: normal;
+        }
+        .timestamp-btn:hover {
+            background: #e1e4e8;
+            border-color: #d1d5da;
+        }
+        .timestamp-btn.active {
+            background: #0366d6;
+            color: white;
+            border-color: #0366d6;
+        }
+        .current-timestamp {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #e1e4e8;
+        }
+        .current-timestamp .label {
+            color: #0366d6;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+        .current-timestamp .value {
+            margin: 5px 0;
+            font-weight: normal;
+        }
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 25px;
+        }
+        .image-card {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .image-header {
+            background-color: #f6f8fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        .hour-label {
+            color: #24292e;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .image-container {
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #fafbfc;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            display: block;
+        }
+        .loading {
+            color: #959da5;
+            font-style: italic;
+            font-weight: normal;
+        }
+        .error-msg {
+            color: #d73a49;
+            background-color: #ffebef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: normal;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            color: #586069;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        @media (max-width: 768px) {
+            .images-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            #date-line, #time-line {
+                font-size: 1.8rem;
+            }
+            .time-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .current-time, .timestamp-selector {
+                min-width: 100%;
+                width: 100%;
+            }
+            .image-container {
+                height: 350px;
+            }
+            .current-timestamp {
+                margin-left: 0;
+                margin-right: 0;
+                text-align: center;
+            }
+            .selector-header {
+                justify-content: center;
+            }
+            .timestamp-buttons {
+                justify-content: center;
+            }
+            .nav-buttons {
+                gap: 15px;
+                padding-bottom: 15px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+                padding: 3px 8px;
+            }
+        }
+        @media (max-width: 500px) {
+            .images-grid {
+                grid-template-columns: 1fr;
+            }
+            .image-container {
+                height: 300px;
+            }
+            #date-line, #time-line {
+                font-size: 1.6rem;
+            }
+            .current-timestamp {
+                padding: 12px;
+            }
+            .nav-buttons {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .nav-btn {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>EC模型 850hPa温度+风 & 500hPa位势高度</h1>
+        <p class="subtitle">图片来自easterlywave.com，引图仅供学习交流和个人查看</p>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.location.href='http://1111111.com/'">主页</button>
+            <button class="nav-btn" onclick="window.location.href='http://1111111.com/'">夏季</button>
+            <button class="nav-btn" onclick="window.location.href='http://1111111.com/'">冬季</button>
+            <button class="nav-btn" onclick="window.location.href='http://1111111.com/'">摄影</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="control-panel">
+            <div class="time-section">
+                <div class="current-time">
+                    <div class="current-time-title">网页刷新时间：</div>
+                    <div id="date-line">2025年12月20日</div>
+                    <div id="time-line">14:30:45</div>
+                    <div id="js-warning" style="color: red; font-size: 0.9rem; margin-top: 5px;">建议启用浏览器JavaScript支持</div>
+                    <noscript>
+                        <div style="color: #586069; font-size: 0.9rem; margin-top: 5px;">
+                            提示：启用JavaScript以显示实时刷新时间
+                        </div>
+                    </noscript>
+                </div>
+                
+                <div class="timestamp-selector">
+                    <div class="selector-header">
+                        <div class="selector-title">选择预报时次</div>
+                    </div>
+                    
+                    <div id="timestamp-buttons" class="timestamp-buttons">
+                        <!-- 时间戳按钮将由 JavaScript 动态生成 -->
+                        <noscript>
+                            <div class="timestamp-btn active">08时起报</div>
+                            <div class="timestamp-btn">20时起报</div>
+                            <div style="margin-top: 10px; color: #586069; font-size: 0.9rem; text-align: center;">
+                                提示：启用JavaScript以切换不同预报时次
+                            </div>
+                        </noscript>
+                    </div>
+                    
+                    <div id="current-selection" class="current-timestamp">
+                        <div class="label">当前选择</div>
+                        <div id="selection-date" class="value">2025年12月20日</div>
+                        <div id="selection-utc0" class="value">UTC+0起报时间：0时</div>
+                        <div id="selection-utc8" class="value">UTC+8起报时间：8时</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="images-grid" id="images-container">
+            <!-- 图片卡片将由 JavaScript 动态生成 -->
+            <noscript>
+                <div style="margin-bottom: 20px; padding: 15px; background-color: #f6f8fa; border-radius: 6px; border: 1px solid #e1e4e8;">
+                    <h3 style="margin-bottom: 10px; color: #24292e;">最近预报时间（08时起报）</h3>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+0小时</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_0.png" alt="ECMWF 0小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+24小时（1天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_24.png" alt="ECMWF 24小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+48小时（2天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_48.png" alt="ECMWF 48小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+72小时（3天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_72.png" alt="ECMWF 72小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+96小时（4天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_96.png" alt="ECMWF 96小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+120小时（5天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_120.png" alt="ECMWF 120小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+144小时（6天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_144.png" alt="ECMWF 144小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+168小时（7天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_168.png" alt="ECMWF 168小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+192小时（8天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_192.png" alt="ECMWF 192小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+216小时（9天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_216.png" alt="ECMWF 216小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+240小时（10天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013100/gpt_china_240.png" alt="ECMWF 240小时预报图" />
+                    </div>
+                </div>
+                
+                <div style="margin: 30px 0; padding: 15px; background-color: #f6f8fa; border-radius: 6px; border: 1px solid #e1e4e8;">
+                    <h3 style="margin-bottom: 10px; color: #24292e;">前一次预报时间（20时起报）</h3>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+0小时</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_0.png" alt="ECMWF 0小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+24小时（1天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_24.png" alt="ECMWF 24小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+48小时（2天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_48.png" alt="ECMWF 48小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+72小时（3天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_72.png" alt="ECMWF 72小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+96小时（4天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_96.png" alt="ECMWF 96小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+120小时（5天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_120.png" alt="ECMWF 120小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+144小时（6天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_144.png" alt="ECMWF 144小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+168小时（7天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_168.png" alt="ECMWF 168小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+192小时（8天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_192.png" alt="ECMWF 192小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+216小时（9天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_216.png" alt="ECMWF 216小时预报图" />
+                    </div>
+                </div>
+                <div class="image-card">
+                    <div class="image-header">
+                        <span class="hour-label">T+240小时（10天）</span>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://www.easterlywave.com/media/model/ecmwf/2026013012/gpt_china_240.png" alt="ECMWF 240小时预报图" />
+                    </div>
+                </div>
+            </noscript>
+        </section>
+    </main>
+
+    <footer>
+        <p>图片来自easterlywave.com，引图仅供学习交流和个人查看</p>
+    </footer>
+
+    <script>
+        (function() {
+            // 配置
+            const BASE_URL = 'https://www.easterlywave.com/media/model/ecmwf';
+            const BASE_IMAGE_NAME = 'gpt_china_';
+            const HOUR_STEPS = [0, 24, 48, 72, 96, 120, 144, 168, 192, 216, 240];
+
+            // 记录网页刷新时间（页面加载时间）
+            const pageLoadTime = new Date();
+
+            // 获取当前时间戳前缀
+            function getCurrentTimePrefix(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = date.getHours();
+                const hourCode = (hours >= 8 && hours < 20) ? '00' : '12';
+                return `${year}${month}${day}${hourCode}`;
+            }
+
+            // 获取前一个时间戳
+            function getPreviousTimestamp(currentTimestamp) {
+                if (currentTimestamp.length !== 10) return null;
+                
+                const year = parseInt(currentTimestamp.substring(0, 4));
+                const month = parseInt(currentTimestamp.substring(4, 6)) - 1;
+                const day = parseInt(currentTimestamp.substring(6, 8));
+                const hourCode = currentTimestamp.substring(8, 10);
+                
+                let date = new Date(year, month, day);
+                let prevHourCode;
+                let prevDate;
+                
+                if (hourCode === '00') {
+                    prevHourCode = '12';
+                    prevDate = new Date(date);
+                    prevDate.setDate(prevDate.getDate() - 1);
+                } else {
+                    prevHourCode = '00';
+                    prevDate = new Date(date);
+                }
+                
+                const prevYear = prevDate.getFullYear();
+                const prevMonth = String(prevDate.getMonth() + 1).padStart(2, '0');
+                const prevDay = String(prevDate.getDate()).padStart(2, '0');
+                
+                return `${prevYear}${prevMonth}${prevDay}${prevHourCode}`;
+            }
+
+            // 更新网页刷新时间显示（只在页面加载时调用一次）
+            function updatePageLoadTimeDisplay() {
+                const year = pageLoadTime.getFullYear();
+                const month = String(pageLoadTime.getMonth() + 1).padStart(2, '0');
+                const day = String(pageLoadTime.getDate()).padStart(2, '0');
+                const hour = String(pageLoadTime.getHours()).padStart(2, '0');
+                const minute = String(pageLoadTime.getMinutes()).padStart(2, '0');
+                const second = String(pageLoadTime.getSeconds()).padStart(2, '0');
+                
+                document.getElementById('date-line').textContent = `${year}年${month}月${day}日`;
+                document.getElementById('time-line').textContent = `${hour}:${minute}:${second}`;
+                
+                return getCurrentTimePrefix(pageLoadTime);
+            }
+
+            // 格式化时间戳为易读的日期
+            function formatTimestampToDate(timestamp) {
+                if (timestamp.length !== 10) return timestamp;
+                
+                const year = timestamp.substring(0, 4);
+                const month = timestamp.substring(4, 6);
+                const day = timestamp.substring(6, 8);
+                
+                return `${year}年${month}月${day}日`;
+            }
+
+            // 更新选择显示
+            function updateSelectionDisplay(timestamp) {
+                if (timestamp.length !== 10) return;
+                
+                const year = timestamp.substring(0, 4);
+                const month = timestamp.substring(4, 6);
+                const day = timestamp.substring(6, 8);
+                const hourCode = timestamp.substring(8, 10);
+                
+                document.getElementById('selection-date').textContent = `${year}年${month}月${day}日`;
+                
+                // UTC+0起报时间
+                const utc0Hour = hourCode === '00' ? '0时' : '12时';
+                document.getElementById('selection-utc0').textContent = `UTC+0起报时间：${utc0Hour}`;
+                
+                // UTC+8起报时间
+                const utc8Hour = hourCode === '00' ? '8时' : '20时';
+                document.getElementById('selection-utc8').textContent = `UTC+8起报时间：${utc8Hour}`;
+            }
+
+            // 创建时间戳选择按钮
+            function createTimestampButtons(currentTimestamp, previousTimestamp) {
+                const container = document.getElementById('timestamp-buttons');
+                container.innerHTML = '';
+                
+                const timestamps = [];
+                if (currentTimestamp) timestamps.push(currentTimestamp);
+                if (previousTimestamp) timestamps.push(previousTimestamp);
+                
+                timestamps.forEach((timestamp, index) => {
+                    const button = document.createElement('button');
+                    button.className = `timestamp-btn ${index === 0 ? 'active' : ''}`;
+                    
+                    const hourCode = timestamp.substring(8, 10);
+                    button.textContent = hourCode === '00' ? '08时起报' : '20时起报';
+                    button.title = formatTimestampToDate(timestamp);
+                    
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.timestamp-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        button.classList.add('active');
+                        updateSelectionDisplay(timestamp);
+                        loadAllImages(timestamp);
+                    });
+                    
+                    container.appendChild(button);
+                });
+                
+                if (timestamps.length > 0) {
+                    updateSelectionDisplay(timestamps[0]);
+                }
+            }
+
+            // 为指定的小时数和时间戳创建图片卡片
+            function createImageCard(hour, timestamp) {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                
+                // 计算天数
+                const days = Math.floor(hour / 24);
+                const dayText = days > 0 ? `（${days}天）` : '';
+                
+                card.innerHTML = `
+                    <div class="image-header">
+                        <span class="hour-label">T+${hour}小时${dayText}</span>
+                    </div>
+                    <div class="image-container" id="img-container-${timestamp}-${hour}">
+                        <div class="loading">正在加载图片...</div>
+                    </div>
+                `;
+                return card;
+            }
+
+            // 加载并显示所有图片
+            function loadAllImages(timestamp) {
+                const container = document.getElementById('images-container');
+                container.innerHTML = '';
+
+                // 首先创建所有图片卡片
+                const cards = [];
+                HOUR_STEPS.forEach(hour => {
+                    const card = createImageCard(hour, timestamp);
+                    container.appendChild(card);
+                    cards.push(card);
+                });
+
+                // 加载第一张图片
+                const firstHour = HOUR_STEPS[0];
+                const firstImgContainer = document.getElementById(`img-container-${timestamp}-${firstHour}`);
+                const firstImgUrl = `${BASE_URL}/${timestamp}/${BASE_IMAGE_NAME}${firstHour}.png`;
+
+                const img = new Image();
+                img.onload = function() {
+                    // 第一张图片加载成功，继续加载其他图片
+                    firstImgContainer.innerHTML = '';
+                    firstImgContainer.appendChild(img);
+
+                    // 加载剩余图片
+                    HOUR_STEPS.slice(1).forEach(hour => {
+                        const imgContainer = document.getElementById(`img-container-${timestamp}-${hour}`);
+                        const imgUrl = `${BASE_URL}/${timestamp}/${BASE_IMAGE_NAME}${hour}.png`;
+
+                        const stepImg = new Image();
+                        stepImg.onload = function() {
+                            imgContainer.innerHTML = '';
+                            imgContainer.appendChild(stepImg);
+                        };
+                        stepImg.onerror = function() {
+                            imgContainer.innerHTML = `<div class="error-msg">无法加载图片，最新起报时次需后延4-6小时才能查看 (T+${hour}小时预报)</div>`;
+                        };
+                        stepImg.src = imgUrl;
+                        stepImg.alt = `ECMWF ${hour}小时预报图`;
+                    });
+                };
+                img.onerror = function() {
+                    // 第一张图片加载失败，显示统一错误信息
+                    const errorMsg = '<div class="error-msg">无法加载图片，最新起报时次需后延4-6小时才能查看</div>';
+                    HOUR_STEPS.forEach(hour => {
+                        const imgContainer = document.getElementById(`img-container-${timestamp}-${hour}`);
+                        imgContainer.innerHTML = errorMsg;
+                    });
+                };
+                img.src = firstImgUrl;
+                img.alt = `ECMWF ${firstHour}小时预报图`;
+            }
+
+            // 初始化
+            function init() {
+                // 隐藏JavaScript警告
+                const jsWarning = document.getElementById('js-warning');
+                if (jsWarning) {
+                    jsWarning.style.display = 'none';
+                }
+                
+                const currentTimestamp = updatePageLoadTimeDisplay();
+                const previousTimestamp = getPreviousTimestamp(currentTimestamp);
+                
+                createTimestampButtons(currentTimestamp, previousTimestamp);
+                loadAllImages(currentTimestamp);
+                
+                // 不再每秒更新时间显示，只显示页面加载时间
+                console.log('网页刷新时间:', pageLoadTime);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+</html>

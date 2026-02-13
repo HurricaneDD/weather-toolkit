@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冬季天气</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background-color: #f6f8fa;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #0366d6;
+            font-weight: normal;
+        }
+        .subtitle {
+            color: #586069;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #0366d6;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+            font-weight: normal;
+        }
+        .nav-btn:hover {
+            text-decoration: underline;
+        }
+        .control-panel {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .section-title {
+            color: #0366d6;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-align: center;
+        }
+        .subsection-title {
+            color: #24292e;
+            font-size: 1.3rem;
+            margin: 20px 0 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0 20px;
+        }
+        .link-btn {
+            padding: 10px 20px;
+            background: #f6f8fa;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #24292e;
+            font-weight: normal;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link-btn:hover {
+            background: #e1e4e8;
+            border-color: #d1d5da;
+        }
+        .timestamp-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .timestamp-btn {
+            padding: 10px 20px;
+            background: #f6f8fa;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #24292e;
+            font-weight: normal;
+        }
+        .timestamp-btn:hover {
+            background: #e1e4e8;
+            border-color: #d1d5da;
+        }
+        .timestamp-btn.active {
+            background: #0366d6;
+            color: white;
+            border-color: #0366d6;
+        }
+        .current-timestamp {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        .current-timestamp .label {
+            color: #0366d6;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+        .current-timestamp .value {
+            margin: 5px 0;
+            font-weight: normal;
+        }
+        .image-card {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .image-header {
+            background-color: #f6f8fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        .hour-label {
+            color: #24292e;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .image-container {
+            width: 100%;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #fafbfc;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .loading {
+            color: #959da5;
+            font-style: italic;
+            font-weight: normal;
+        }
+        .error-msg {
+            color: #d73a49;
+            background-color: #ffebef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: normal;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            color: #586069;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .nav-buttons {
+                gap: 15px;
+                padding-bottom: 15px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+                padding: 3px 8px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .subsection-title {
+                font-size: 1rem;
+            }
+            .buttons-group {
+                gap: 10px;
+            }
+            .link-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 500px) {
+            .nav-buttons {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .nav-btn {
+                font-size: 0.9rem;
+            }
+            .section-title {
+                font-size: 1.1rem;
+            }
+            .subsection-title {
+                font-size: 0.9rem;
+            }
+            .link-btn {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>冬季天气</h1>
+        <p class="subtitle">引图来自tropical tidbits，仅供学习交流和个人使用</p>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.location.href='index.html'">主页</button>
+            <button class="nav-btn" onclick="window.location.href='summer.html'">夏季</button>
+            <button class="nav-btn" onclick="window.location.href='winter.html'">冬季</button>
+            <button class="nav-btn" onclick="window.location.href='photography.html'">摄影</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="control-panel">
+            <div class="section-title">冷空气专题</div>
+            
+            <div class="subsection-title">850hPa - 1500m</div>
+            <div class="buttons-group">
+                <a href="general\EC850温度风和500位势高度.html" class="link-btn" target="_blank">EC 850hPa温度+风 & 500hPa位势高度</a>
+                <a href="xxx.com" class="link-btn" target="_blank">GFS 850hPa温度</a>
+            </div>
+            
+            <div class="subsection-title">地表</div>
+            <div class="buttons-group">
+                <a href="xxx.com" class="link-btn" target="_blank">GFS 地面温度</a>
+                <a href="https://www.nmc.cn/publish/observations/hourly-temperature.html" class="link-btn" target="_blank">NMC气温实况</a>
+            </div>
+        </section>
+
+        <section class="control-panel">
+            <div class="section-title">降雪专题</div>
+            
+            <div class="subsection-title">降雪展望</div>
+            <div class="buttons-group">
+                <a href="https://www.windy.com/zh/-%E6%96%B0%E9%9B%AA-snowAccu?snowAccu,20.427,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy新雪</a>
+            </div>
+            
+            <div class="subsection-title">降雪时间确定</div>
+            <div class="buttons-group">
+                <a href="xxx.com" class="link-btn" target="_blank">GFS 24小时降雪量</a>
+                <a href="https://www.nmc.cn/publish/precipitation/1-day.html" class="link-btn" target="_blank">NMC降水预报</a>
+                <a href="https://www.windy.com/zh/-%E9%9B%A8%E3%80%81%E9%9B%B7%E6%9A%B4-rain?rain,20.427,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy降水</a>
+            </div>
+            
+            <div class="subsection-title">短临预测</div>
+            <div class="buttons-group">
+                <a href="https://www.nmc.cn/publish/radar/huadong.html" class="link-btn" target="_blank">NMC雷达拼图</a>
+                <a href="https://www.nmc.cn/publish/observations/hourly-precipitation.html" class="link-btn" target="_blank">NMC气近1h降水</a>
+                <a href="https://www.windy.com/radiosonde/3zaaPASP?20.427,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy探空</a>
+                <a href="https://www.windy.com/zh/-%E6%B0%94%E8%B1%A1%E9%9B%B7%E8%BE%BE-radar?radar,32.169,112.388,4,p:radiosonde" class="link-btn" target="_blank">Windy雷达</a>
+            </div>
+            
+            <div class="subsection-title">GFS累计降雪量</div>
+            <div class="timestamp-buttons" id="timestamp-buttons">
+                <!-- 时间戳按钮将由 JavaScript 动态生成 -->
+            </div>
+            <div class="current-timestamp" id="current-selection">
+                <div class="label">当前选择</div>
+                <div id="selection-date" class="value">2026年02月13日</div>
+                <div id="selection-utc0" class="value">UTC+0起报时间：06时</div>
+                <div id="selection-utc8" class="value">UTC+8起报时间：14时</div>
+            </div>
+            <div class="images-grid" id="images-container">
+                <!-- 图片卡片将由 JavaScript 动态生成 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>仅供学习交流和个人使用</p>
+    </footer>
+
+    <script>
+        (function() {
+            // 配置
+            const PROXY_BASE_URL = 'http://fangxx.fun:4000/proxy?url=';
+            const TROPICALTIDBITS_BASE = 'https://www.tropicaltidbits.com/analysis/models/gfs';
+            const IMAGE_NAME = 'gfs_asnow_ea_';
+            // 预报时次：16天（384小时）、7天（168小时）、3天（72小时）、24小时
+            const FORECAST_STEPS = [65, 29, 13, 5];
+            const FORECAST_LABELS = [
+                '16天（384小时）',
+                '7天（168小时）',
+                '3天（72小时）',
+                '24小时'
+            ];
+
+            // 记录网页刷新时间（页面加载时间）
+            const pageLoadTime = new Date();
+
+            // 获取当前时间戳前缀
+            function getCurrentTimePrefix(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = date.getHours();
+                
+                let hourCode;
+                let adjustedDate = new Date(date);
+                
+                // 根据当前时间选择默认预报时次
+                if (hours >= 2 && hours < 8) {
+                    // 02-08时：自动选择昨日12Z（昨日20时）的预报
+                    adjustedDate.setDate(adjustedDate.getDate() - 1);
+                    hourCode = '12';
+                } else if (hours >= 8 && hours < 14) {
+                    // 08-14时：自动选择昨日18Z（当日2时）的预报
+                    adjustedDate.setDate(adjustedDate.getDate() - 1);
+                    hourCode = '18';
+                } else if (hours >= 14 && hours < 20) {
+                    // 14-20时：自动选择当日00Z（当日8时）的预报
+                    hourCode = '00';
+                } else {
+                    // 20-次日02时：自动选择当日06Z（当日14时）的预报
+                    hourCode = '06';
+                }
+                
+                // 使用调整后的日期
+                const adjustedYear = adjustedDate.getFullYear();
+                const adjustedMonth = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+                const adjustedDay = String(adjustedDate.getDate()).padStart(2, '0');
+                
+                return `${adjustedYear}${adjustedMonth}${adjustedDay}${hourCode}`;
+            }
+
+            // 获取多个时间戳（最新的4个预报时次）
+            function getMultipleTimestamps(baseTimestamp) {
+                if (baseTimestamp.length !== 10) return [];
+                
+                const timestamps = [baseTimestamp];
+                
+                for (let i = 0; i < 3; i++) {
+                    const prevTimestamp = getPreviousTimestamp(timestamps[timestamps.length - 1]);
+                    if (prevTimestamp) {
+                        timestamps.push(prevTimestamp);
+                    } else {
+                        break;
+                    }
+                }
+                
+                return timestamps;
+            }
+
+            // 获取前一个时间戳
+            function getPreviousTimestamp(currentTimestamp) {
+                if (currentTimestamp.length !== 10) return null;
+                
+                const year = parseInt(currentTimestamp.substring(0, 4));
+                const month = parseInt(currentTimestamp.substring(4, 6)) - 1;
+                const day = parseInt(currentTimestamp.substring(6, 8));
+                const hourCode = parseInt(currentTimestamp.substring(8, 10));
+                
+                let date = new Date(year, month, day, hourCode);
+                // 减去6小时得到前一个预报时次
+                date.setHours(date.getHours() - 6);
+                
+                const prevYear = date.getFullYear();
+                const prevMonth = String(date.getMonth() + 1).padStart(2, '0');
+                const prevDay = String(date.getDate()).padStart(2, '0');
+                const prevHourCode = String(date.getHours()).padStart(2, '0');
+                
+                return `${prevYear}${prevMonth}${prevDay}${prevHourCode}`;
+            }
+
+            // 格式化时间戳为易读的日期
+            function formatTimestampToDate(timestamp) {
+                if (timestamp.length !== 10) return timestamp;
+                
+                const year = timestamp.substring(0, 4);
+                const month = timestamp.substring(4, 6);
+                const day = timestamp.substring(6, 8);
+                
+                return `${year}年${month}月${day}日`;
+            }
+
+            // 更新选择显示
+            function updateSelectionDisplay(timestamp) {
+                if (timestamp.length !== 10) return;
+                
+                const year = timestamp.substring(0, 4);
+                const month = timestamp.substring(4, 6);
+                const day = timestamp.substring(6, 8);
+                const hourCode = timestamp.substring(8, 10);
+                
+                document.getElementById('selection-date').textContent = `${year}年${month}月${day}日`;
+                
+                // UTC+0起报时间
+                const utc0Hour = `${hourCode}时`;
+                document.getElementById('selection-utc0').textContent = `UTC+0起报时间：${utc0Hour}`;
+                
+                // UTC+8起报时间（UTC+0时间加8小时）
+                const utc0HourNum = parseInt(hourCode);
+                let utc8HourNum = (utc0HourNum + 8) % 24;
+                let utc8Hour;
+                
+                // 特殊处理：08时起报显示为"08时"，02时起报显示为"次日02时"
+                if (utc8HourNum === 8) {
+                    utc8Hour = "08时";
+                } else if (utc8HourNum === 2) {
+                    utc8Hour = "次日02时";
+                } else {
+                    utc8Hour = `${utc8HourNum}时`;
+                }
+                
+                document.getElementById('selection-utc8').textContent = `UTC+8起报时间：${utc8Hour}`;
+            }
+
+            // 创建时间戳选择按钮
+            function createTimestampButtons(baseTimestamp) {
+                const container = document.getElementById('timestamp-buttons');
+                container.innerHTML = '';
+                
+                let timestamps = getMultipleTimestamps(baseTimestamp);
+                
+                // 按照UTC+8时间的顺序排序：8时、14时、20时、2时
+                timestamps.sort((a, b) => {
+                    const hourCodeA = parseInt(a.substring(8, 10));
+                    const utc8HourA = (hourCodeA + 8) % 24;
+                    const hourCodeB = parseInt(b.substring(8, 10));
+                    const utc8HourB = (hourCodeB + 8) % 24;
+                    
+                    // 定义期望的顺序：8时、14时、20时、2时
+                    const order = [8, 14, 20, 2];
+                    return order.indexOf(utc8HourA) - order.indexOf(utc8HourB);
+                });
+                
+                let activeTimestamp = baseTimestamp;
+                
+                timestamps.forEach((timestamp, index) => {
+                    const button = document.createElement('button');
+                    // 默认选中baseTimestamp对应的按钮
+                    button.className = `timestamp-btn ${timestamp === activeTimestamp ? 'active' : ''}`;
+                    
+                    const hourCode = parseInt(timestamp.substring(8, 10));
+                    // 计算UTC+8时间
+                    let utc8HourNum = (hourCode + 8) % 24;
+                    // 格式化UTC+8时间，确保两位数显示
+                    const formattedUtc8Hour = utc8HourNum.toString().padStart(2, '0');
+                    // 格式化UTC+0时间，添加Z后缀
+                    const formattedUtc0Hour = hourCode.toString().padStart(2, '0') + 'Z';
+                    // 构建按钮文本
+                    button.textContent = `${formattedUtc8Hour}时起报（${formattedUtc0Hour}）`;
+                    button.title = formatTimestampToDate(timestamp);
+                    
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.timestamp-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        button.classList.add('active');
+                        updateSelectionDisplay(timestamp);
+                        loadAllImages(timestamp);
+                    });
+                    
+                    container.appendChild(button);
+                });
+                
+                if (activeTimestamp) {
+                    updateSelectionDisplay(activeTimestamp);
+                }
+            }
+
+            // 为指定的预报步骤和时间戳创建图片卡片
+            function createImageCard(step, index, timestamp) {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                
+                card.innerHTML = `
+                    <div class="image-header">
+                        <span class="hour-label">${FORECAST_LABELS[index]}</span>
+                    </div>
+                    <div class="image-container" id="img-container-${timestamp}-${step}">
+                        <div class="loading">正在加载图片...</div>
+                    </div>
+                `;
+                return card;
+            }
+
+            // 加载并显示所有图片
+            function loadAllImages(timestamp) {
+                const container = document.getElementById('images-container');
+                container.innerHTML = '';
+
+                // 首先创建所有图片卡片
+                FORECAST_STEPS.forEach((step, index) => {
+                    const card = createImageCard(step, index, timestamp);
+                    container.appendChild(card);
+                });
+
+                // 加载第一张图片
+                const firstStep = FORECAST_STEPS[0];
+                const firstImgContainer = document.getElementById(`img-container-${timestamp}-${firstStep}`);
+                const originalImgUrl = `${TROPICALTIDBITS_BASE}/${timestamp}/${IMAGE_NAME}${firstStep}.png`;
+                const encodedImgUrl = encodeURIComponent(originalImgUrl);
+                const proxyImgUrl = `${PROXY_BASE_URL}${encodedImgUrl}&referer=https%3A%2F%2Fwww.tropicaltidbits.com%2F`;
+
+                const img = new Image();
+                img.onload = function() {
+                    // 第一张图片加载成功，继续加载其他图片
+                    firstImgContainer.innerHTML = '';
+                    firstImgContainer.appendChild(img);
+
+                    // 加载剩余图片
+                    FORECAST_STEPS.slice(1).forEach((step, index) => {
+                        const imgContainer = document.getElementById(`img-container-${timestamp}-${step}`);
+                        const stepOriginalImgUrl = `${TROPICALTIDBITS_BASE}/${timestamp}/${IMAGE_NAME}${step}.png`;
+                        const stepEncodedImgUrl = encodeURIComponent(stepOriginalImgUrl);
+                        const stepProxyImgUrl = `${PROXY_BASE_URL}${stepEncodedImgUrl}&referer=https%3A%2F%2Fwww.tropicaltidbits.com%2F`;
+
+                        const stepImg = new Image();
+                        stepImg.onload = function() {
+                            imgContainer.innerHTML = '';
+                            imgContainer.appendChild(stepImg);
+                        };
+                        stepImg.onerror = function() {
+                            imgContainer.innerHTML = `<div class="error-msg">无法加载图片，最新起报时次需后延4-6小时才能查看</div>`;
+                        };
+                        stepImg.src = stepProxyImgUrl;
+                        stepImg.alt = `GFS 累计降雪量 ${FORECAST_LABELS[index + 1]}`;
+                    });
+                };
+                img.onerror = function() {
+                    // 第一张图片加载失败，显示统一错误信息
+                    const errorMsg = '<div class="error-msg">无法加载图片，最新起报时次需后延4-6小时才能查看</div>';
+                    FORECAST_STEPS.forEach(step => {
+                        const imgContainer = document.getElementById(`img-container-${timestamp}-${step}`);
+                        imgContainer.innerHTML = errorMsg;
+                    });
+                };
+                img.src = proxyImgUrl;
+                img.alt = `GFS 累计降雪量 ${FORECAST_LABELS[0]}`;
+            }
+
+            // 初始化
+            function init() {
+                const currentTimestamp = getCurrentTimePrefix(pageLoadTime);
+                
+                createTimestampButtons(currentTimestamp);
+                loadAllImages(currentTimestamp);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+</html>

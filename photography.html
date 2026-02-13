@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摄影天气</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background-color: #f6f8fa;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #0366d6;
+            font-weight: normal;
+        }
+        .subtitle {
+            color: #586069;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #0366d6;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+            font-weight: normal;
+        }
+        .nav-btn:hover {
+            text-decoration: underline;
+        }
+        .control-panel {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .section-title {
+            color: #0366d6;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-align: center;
+        }
+        .subsection-title {
+            color: #24292e;
+            font-size: 1.3rem;
+            margin: 20px 0 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0 20px;
+        }
+        .buttons-group-newline {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0 20px;
+        }
+        .link-btn {
+            padding: 10px 20px;
+            background: #f6f8fa;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #24292e;
+            font-weight: normal;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link-btn:hover {
+            background: #e1e4e8;
+            border-color: #d1d5da;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .image-caption {
+            font-size: 0.9rem;
+            color: #586069;
+            margin: 5px 0;
+        }
+        .image-card {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .image-header {
+            background-color: #f6f8fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        .hour-label {
+            color: #24292e;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            color: #586069;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .nav-buttons {
+                gap: 15px;
+                padding-bottom: 15px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+                padding: 3px 8px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .subsection-title {
+                font-size: 1rem;
+            }
+            .buttons-group,
+            .buttons-group-newline {
+                gap: 10px;
+            }
+            .link-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 500px) {
+            .nav-buttons {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .nav-btn {
+                font-size: 0.9rem;
+            }
+            .section-title {
+                font-size: 1.1rem;
+            }
+            .subsection-title {
+                font-size: 0.9rem;
+            }
+            .link-btn {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>摄影天气</h1>
+        <p class="subtitle">仅供学习交流和个人使用</p>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.location.href='index.html'">主页</button>
+            <button class="nav-btn" onclick="window.location.href='summer.html'">夏季</button>
+            <button class="nav-btn" onclick="window.location.href='winter.html'">冬季</button>
+            <button class="nav-btn" onclick="window.location.href='photography.html'">摄影</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="control-panel">
+            <div class="section-title">摄影</div>
+            
+            <div class="subsection-title">空气质量与能见度</div>
+            <div class="buttons-group">
+                <a href="https://www.nmc.cn/publish/haze.html" class="link-btn" target="_blank">NMC霾预报</a>
+                <a href="https://www.nmc.cn/publish/fog.html" class="link-btn" target="_blank">NMC雾预报</a>
+                <a href="https://www.nmc.cn/publish/environment/air_pollution-24.html" class="link-btn" target="_blank">NMC空气污染条件预报</a>
+                <a href="https://www.nmc.cn/publish/severeweather/dust.html" class="link-btn" target="_blank">NMC沙尘天气预报</a>
+            </div>
+            <div class="buttons-group-newline">
+                <a href="https://www.windy.com/zh/-Air-quality-index-aqi?cams,aqi,28.652,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy AQI</a>
+                <a href="https://www.windy.com/zh/-%E7%B2%89%E5%B0%98%E6%B5%93%E5%BA%A6-dustsm?dustsm,28.664,121.429,5,p:radiosonde" class="link-btn" target="_blank">Windy 粉尘</a>
+                <a href="https://www.windy.com/zh/-%E6%B0%94%E6%BA%B6%E8%83%B6-aod550?aod550,28.652,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy 气溶胶</a>
+                <a href="https://www.windy.com/zh/-%E9%9B%BE-fog?icon,fog,28.652,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy ICON雾预报</a>
+                <a href="https://www.windy.com/zh/-PM2-5-pm2p5?cams,pm2p5,28.652,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy PM2.5</a>
+            </div>
+            
+            <div class="subsection-title">朝霞晚霞和火烧云</div>
+            <div class="buttons-group">
+                <a href="https://11111111.com" class="link-btn" target="_blank">GFS/EC数值预报（施工中）</a>
+                <a href="https://sunsetting.cn/windy" class="link-btn" target="_blank">Void晚霞观测</a>
+                <a href="http://njsky.cc/" class="link-btn" target="_blank">南京火烧云预报</a>
+                <a href="https://escaperesearchzero.github.io/sunsetPredictor/" class="link-btn" target="_blank">Sunset Predictor</a>
+            </div>
+            
+            <div class="subsection-title">高原山地等特殊环境天气</div>
+            <div class="buttons-group">
+                <a href="https://www.mountain-forecast.com/" class="link-btn" target="_blank">mountain-forecast.com 山地天气</a>
+            </div>
+        </section>
+
+        <section class="control-panel">
+            <div class="section-title">空间天气</div>
+            
+            <div class="buttons-group">
+                <a href="http://www.sepc.ac.cn/dailyForecast_chn.php" class="link-btn" target="_blank">中科院 空间环境预报中心</a>
+                <a href="https://www.weather.com.cn/space/" class="link-btn" target="_blank">中国天气网空间天气专题</a>
+            </div>
+            
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">全球极光椭圆区（来自spaceweatherlive）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://www.spaceweatherlive.com/images/grafieken/aurora-map.jpg" alt="全球极光椭圆区">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>仅供学习交流和个人使用</p>
+    </footer>
+</body>
+</html>

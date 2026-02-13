@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夏季天气</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background-color: #f6f8fa;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #0366d6;
+            font-weight: normal;
+        }
+        .subtitle {
+            color: #586069;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #0366d6;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+            font-weight: normal;
+        }
+        .nav-btn:hover {
+            text-decoration: underline;
+        }
+        .control-panel {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .section-title {
+            color: #0366d6;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-align: center;
+        }
+        .subsection-title {
+            color: #24292e;
+            font-size: 1.3rem;
+            margin: 20px 0 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0 20px;
+        }
+        .link-btn {
+            padding: 10px 20px;
+            background: #f6f8fa;
+            border: 2px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            color: #24292e;
+            font-weight: normal;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link-btn:hover {
+            background: #e1e4e8;
+            border-color: #d1d5da;
+        }
+        .image-card {
+            background: #ffffff;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .image-header {
+            background-color: #f6f8fa;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        .hour-label {
+            color: #24292e;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        .image-container {
+            width: 100%;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #fafbfc;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            color: #586069;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .nav-buttons {
+                gap: 15px;
+                padding-bottom: 15px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+                padding: 3px 8px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .subsection-title {
+                font-size: 1rem;
+            }
+            .buttons-group {
+                gap: 10px;
+            }
+            .link-btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 500px) {
+            .nav-buttons {
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .nav-btn {
+                font-size: 0.9rem;
+            }
+            .section-title {
+                font-size: 1.1rem;
+            }
+            .subsection-title {
+                font-size: 0.9rem;
+            }
+            .link-btn {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>夏季天气</h1>
+        <p class="subtitle">引图来自typhoon2000、dapiya，仅供学习交流和个人使用</p>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="window.location.href='index.html'">主页</button>
+            <button class="nav-btn" onclick="window.location.href='summer.html'">夏季</button>
+            <button class="nav-btn" onclick="window.location.href='winter.html'">冬季</button>
+            <button class="nav-btn" onclick="window.location.href='photography.html'">摄影</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="control-panel">
+            <div class="section-title">强对流专题</div>
+            
+            <div class="subsection-title">短临预测</div>
+            <div class="buttons-group">
+                <a href="https://www.nmc.cn/publish/radar/huadong.html" class="link-btn" target="_blank">NMC雷达拼图</a>
+                <a href="https://www.windy.com/zh/-%E6%B0%94%E8%B1%A1%E9%9B%B7%E8%BE%BE-radar?radar,32.169,112.388,4,p:radiosonde" class="link-btn" target="_blank">Windy雷达</a>
+            </div>
+            
+            <div class="subsection-title">降水预报</div>
+            <div class="buttons-group">
+                <a href="https://www.nmc.cn/publish/precipitation/1-day.html" class="link-btn" target="_blank">NMC降水预报</a>
+                <a href="https://www.windy.com/zh/-%E9%9B%A8%E3%80%81%E9%9B%B7%E6%9A%B4-rain?rain,20.427,121.443,5,p:radiosonde" class="link-btn" target="_blank">Windy降水</a>
+            </div>
+        </section>
+        
+        <section class="control-panel">
+            <div class="section-title">热带气旋专题</div>
+            
+            <div class="subsection-title">副高观测</div>
+            <div class="buttons-group">
+                <a href="general\EC850温度风和500位势高度.html" class="link-btn" target="_blank">EC 850hPa温度+风 & 500hPa位势高度</a>
+                <a href="summer\EC850风和海压.html" class="link-btn" target="_blank">EC 850hPa风 + 海平面气压</a>
+                <a href="https://www.nmc.cn/publish/observations/china/dm/weatherchart-h000.htm" class="link-btn" target="_blank">NMC天气图 - 地面层</a>
+            </div>
+            
+            <div class="subsection-title">台风路径</div>
+            <div class="buttons-group">
+                <a href="https://www.nmc.cn/publish/typhoon/probability-img2.html" class="link-btn" target="_blank">NMC台风路径</a>
+                <a href="https://www.wztf121.com/" class="link-btn" target="_blank">温州台风网</a>
+                <a href="https://www.easterlywave.com/typhoon/ensemble/" class="link-btn" target="_blank">Easterlywave EC集系</a>
+            </div>
+            
+            <div class="subsection-title">台风临近追踪和定位</div>
+            <div class="buttons-group">
+                <a href="https://www.easterlywave.com/typhoon/satellite/target/" class="link-btn" target="_blank">Easterlywave 热带气旋云图</a>
+                <a href="https://www.nmc.cn/publish/radar/zhe-jiang/wen-zhou.htm" class="link-btn" target="_blank">NMC单站雷达 - 浙江温州</a>
+                <a href="https://www.tz121.com/index/main_new" class="link-btn" target="_blank">台州天气网</a>
+            </div>
+            
+            <div class="subsection-title">中期台风展望</div>
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">当前气旋和路径预报（来自typhoon2000）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://www.typhoon2000.ph/multi/models/202602071200_ALL.PNG" alt="当前气旋和路径预报">
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">海洋表面水温（来自dapiya）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://data.dapiya.cn/satellite/data/remss_sst_wpac.png" alt="海洋表面水温">
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">GEFS 10日集系（来自dapiya）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://data.dapiya.cn/satellite/data/gefs_ens_0p25_wpac.png" alt="GEFS 10日集系">
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">GEFS 15日集系（来自dapiya）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://data.dapiya.cn/satellite/data/gefs_ens_0p5_wpac.png" alt="GEFS 15日集系">
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-header">
+                    <span class="hour-label">AIFS 15日集系（来自dapiya）</span>
+                </div>
+                <div class="image-container">
+                    <img src="https://data.dapiya.cn/satellite/data/aifs_ens_0p25_wpac.png" alt="AIFS 15日集系">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>仅供学习交流和个人使用</p>
+    </footer>
+</body>
+</html>
